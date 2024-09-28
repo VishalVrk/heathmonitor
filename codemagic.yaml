@@ -1,22 +1,16 @@
 workflows:
   expo_android:
     name: Expo Android APK Build
-    max_build_duration: 60
+    environment:
+      vars:
+        EAS_BUILD_PROFILE: release
     scripts:
       - name: Install dependencies
         script: npm install
       - name: Build Android APK
-        script: npx expo build:android --no-wait
-      - name: Wait for Expo build to finish
-        script: |
-          build_id=$(npx expo build:status --json | jq -r '.id')
-          while [ "$(npx expo build:status --json | jq -r '.status')" != "finished" ]; do
-            echo "Waiting for build to complete..."
-            sleep 30
-          done
-          npx expo url:apk -i $build_id > apk_url.txt
+        script: npx eas build -p android --profile release --non-interactive
     artifacts:
-      - apk_url.txt
+      - ./build/android/*.apk
     publishing:
       email:
         recipients:
