@@ -1,70 +1,157 @@
-import { Image, StyleSheet, Platform } from 'react-native';
+import React, { useState } from 'react';
+import { View, TextInput, Button, StyleSheet, ScrollView } from 'react-native';
+import { initializeApp } from 'firebase/app';
+import { getFirestore, collection, addDoc } from 'firebase/firestore';
 
-import { HelloWave } from '@/components/HelloWave';
-import ParallaxScrollView from '@/components/ParallaxScrollView';
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
+const firebaseConfig = {
+  apiKey: "AIzaSyABv_G5wc4IUYihLAKxFfTkxBeFlf25sSk",
+  authDomain: "healthcare-mobileapp.firebaseapp.com",
+  projectId: "healthcare-mobileapp",
+  storageBucket: "healthcare-mobileapp.appspot.com",
+  messagingSenderId: "534901278592",
+  appId: "1:534901278592:web:402ab71be2d6a29c7fe365",
+  measurementId: "G-GTK2XEJJWR"
+};
 
-export default function HomeScreen() {
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+export default function PatientDataForm() {
+  const [patientData, setPatientData] = useState({
+    name: '',
+    age: '',
+    gender: '',
+    weight: '',
+    height: '',
+    sugarLevel: '',
+    bloodPressure: '',
+    allergies: '',
+    medications: '',
+    healthConditions: '',
+  });
+
+  const handleSubmit = async () => {
+    try {
+      // await addDoc(collection(db, 'patients'), patientData);
+      // alert('Patient data submitted successfully!');
+      // Reset form
+      setPatientData({
+        name: '',
+        age: '',
+        gender: '',
+        weight: '',
+        height: '',
+        sugarLevel: '',
+        bloodPressure: '',
+        allergies: '',
+        medications: '',
+        healthConditions: '',
+      });
+    } catch (error) {
+      console.error('Error adding document: ', error);
+      alert('An error occurred while submitting data.');
+    }
+  };
+
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({ ios: 'cmd + d', android: 'cmd + m' })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-        <ThemedText>
-          Tap the Explore tab to learn more about what's included in this starter app.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          When you're ready, run{' '}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
+    <ScrollView style={styles.container}>
+      <TextInput
+        style={styles.input}
+        placeholder="Name"
+        placeholderTextColor="#888" // Adjust placeholder color here
+        value={patientData.name}
+        onChangeText={(text) => setPatientData({ ...patientData, name: text })}
+      />
+      <TextInput
+        style={styles.input}
+        placeholder="Age"
+        placeholderTextColor="#888" // Adjust placeholder color here
+        value={patientData.age}
+        onChangeText={(text) => setPatientData({ ...patientData, age: text })}
+        keyboardType="numeric"
+      />
+         <TextInput
+        style={styles.input}
+        placeholder="Gender"
+        placeholderTextColor="#888" // Adjust placeholder color here
+        value={patientData.gender}
+        onChangeText={(text) => setPatientData({ ...patientData, gender: text })}
+      />
+        <TextInput
+        style={styles.input}
+        placeholder="Weight (kg)"
+        placeholderTextColor="#888" // Adjust placeholder color here
+        value={patientData.weight}
+        onChangeText={(text) => setPatientData({ ...patientData, weight: text })}
+        keyboardType="numeric"
+      />
+       <TextInput
+        style={styles.input}
+        placeholder="Height (cm)"
+        placeholderTextColor="#888" // Adjust placeholder color here
+        value={patientData.height}
+        onChangeText={(text) => setPatientData({ ...patientData, height: text })}
+        keyboardType="numeric"
+      />
+      <TextInput
+        style={styles.input}
+        placeholder="Sugar Level (mg/dL)"
+        placeholderTextColor="#888" // Adjust placeholder color here
+        value={patientData.sugarLevel}
+        onChangeText={(text) => setPatientData({ ...patientData, sugarLevel: text })}
+        keyboardType="numeric"
+      />
+      <TextInput
+        style={styles.input}
+        placeholder="Allergies"
+        placeholderTextColor="#888" // Adjust placeholder color here
+        value={patientData.allergies}
+        onChangeText={(text) => setPatientData({ ...patientData, allergies: text })}
+      />
+       <TextInput
+        style={styles.input}
+        placeholder="Medications"
+        placeholderTextColor="#888" // Adjust placeholder color here
+        value={patientData.medications}
+        onChangeText={(text) => setPatientData({ ...patientData, medications: text })}
+      />
+      <TextInput
+        style={styles.input}
+        placeholder="Health Conditions"
+        value={patientData.healthConditions}
+        placeholderTextColor="#888" // Adjust placeholder color here
+        onChangeText={(text) => setPatientData({ ...patientData, healthConditions: text })}
+      />
+       <Button title="Submit" onPress={handleSubmit}/>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
+  container: {
+    flex: 1,
+    padding: 20,
+    backgroundColor: '#f8f8f8',
   },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    marginBottom: 20,
+    color: '#333',
   },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
+  input: {
+    height: 50,
+    borderColor: '#ddd',
+    borderWidth: 1,
+    borderRadius: 5,
+    marginBottom: 15,
+    paddingHorizontal: 10,
+    backgroundColor: '#fff',
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 5,
+    elevation: 2, // For Android shadow
   },
 });
