@@ -32,8 +32,8 @@ export default function PatientDataForm() {
 
   const handleSubmit = async () => {
     try {
-      // await addDoc(collection(db, 'patients'), patientData);
-      // alert('Patient data submitted successfully!');
+      await addDoc(collection(db, 'patients'), patientData);
+      alert('Patient data submitted successfully!');
       // Reset form
       setPatientData({
         name: '',

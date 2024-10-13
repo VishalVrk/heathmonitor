@@ -1,37 +1,43 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
-import { useFonts } from 'expo-font';
+import React, { useState } from 'react';
+import LoginScreen from './login-screen'; // Your login screen component
+import { onAuthStateChanged, signOut } from 'firebase/auth';
 import { Stack } from 'expo-router';
-import * as SplashScreen from 'expo-splash-screen';
-import { useEffect } from 'react';
 import 'react-native-reanimated';
+import { auth } from '../firebase-config';
+// import { Buffer } from 'buffer';
 
-import { useColorScheme } from '@/hooks/useColorScheme';
 
-// Prevent the splash screen from auto-hiding before asset loading is complete.
-SplashScreen.preventAutoHideAsync();
+// global.Buffer = global.Buffer || Buffer;
+// global.process = require('process');
 
 export default function RootLayout() {
-  const colorScheme = useColorScheme();
-  const [loaded] = useFonts({
-    SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  // Listen to Firebase auth state changes
+  onAuthStateChanged(auth, (user) => {
+    if (user) {
+      setIsAuthenticated(true); // User is logged in
+    } else {
+      setIsAuthenticated(false); // User is logged out
+    }
   });
 
-  useEffect(() => {
-    if (loaded) {
-      SplashScreen.hideAsync();
-    }
-  }, [loaded]);
+  const handleLogout = () => {
+    signOut(auth); // Logs out the user
+  };
 
-  if (!loaded) {
-    return null;
-  }
 
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
+    <>
+      
+      {!isAuthenticated ? (
+        <LoginScreen onLogin={() => setIsAuthenticated(true)} />
+      ) : (
+       <Stack>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen name="+not-found" />
-      </Stack>
-    </ThemeProvider>
+      </Stack> 
+      )}
+    </>
   );
 }
