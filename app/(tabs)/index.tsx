@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, TextInput, Button, StyleSheet, ScrollView } from 'react-native';
+import { View, TextInput, Button, StyleSheet, ScrollView,Alert, Keyboard, Text, Switch} from 'react-native';
 import { initializeApp } from 'firebase/app';
 import { getFirestore, collection, addDoc } from 'firebase/firestore';
 
@@ -30,26 +30,33 @@ export default function PatientDataForm() {
     healthConditions: '',
   });
 
+  const validateForm = () => {
+    const { name, age, gender, weight, height, sugarLevel, bloodPressure, allergies, medications, healthConditions } = patientData;
+    return true;
+  };
+
   const handleSubmit = async () => {
-    try {
-      await addDoc(collection(db, 'patients'), patientData);
-      alert('Patient data submitted successfully!');
-      // Reset form
-      setPatientData({
-        name: '',
-        age: '',
-        gender: '',
-        weight: '',
-        height: '',
-        sugarLevel: '',
-        bloodPressure: '',
-        allergies: '',
-        medications: '',
-        healthConditions: '',
-      });
-    } catch (error) {
-      console.error('Error adding document: ', error);
-      alert('An error occurred while submitting data.');
+    if (validateForm()) {
+      try {
+        await addDoc(collection(db, 'patients'), patientData);
+        Alert.alert('Success', 'Patient data submitted successfully!');
+        // Reset form
+        setPatientData({
+          name: '',
+          age: '',
+          gender: '',
+          weight: '',
+          height: '',
+          sugarLevel: '',
+          bloodPressure: '',
+          allergies: '',
+          medications: '',
+          healthConditions: '',
+        });
+      } catch (error) {
+        console.error('Error adding document: ', error);
+        Alert.alert('Error', 'An error occurred while submitting data.');
+      }
     }
   };
 
@@ -68,7 +75,6 @@ export default function PatientDataForm() {
         placeholderTextColor="#888" // Adjust placeholder color here
         value={patientData.age}
         onChangeText={(text) => setPatientData({ ...patientData, age: text })}
-        keyboardType="numeric"
       />
          <TextInput
         style={styles.input}
@@ -78,13 +84,18 @@ export default function PatientDataForm() {
         onChangeText={(text) => setPatientData({ ...patientData, gender: text })}
       />
         <TextInput
-        style={styles.input}
-        placeholder="Weight (kg)"
-        placeholderTextColor="#888" // Adjust placeholder color here
-        value={patientData.weight}
-        onChangeText={(text) => setPatientData({ ...patientData, weight: text })}
-        keyboardType="numeric"
-      />
+          style={styles.input}
+          placeholder="Weight (kg)"
+          placeholderTextColor="#888"
+          value={patientData.weight}
+          onChangeText={(text) => setPatientData({ ...patientData, weight: text.replace(/[^0-9]/g, '') })} // Restrict to numbers only
+          keyboardType="numeric"
+          returnKeyType="done"
+          onSubmitEditing={() => {
+            Keyboard.dismiss();
+          }}
+          maxLength={2}
+          />
        <TextInput
         style={styles.input}
         placeholder="Height (cm)"
@@ -92,6 +103,11 @@ export default function PatientDataForm() {
         value={patientData.height}
         onChangeText={(text) => setPatientData({ ...patientData, height: text })}
         keyboardType="numeric"
+          returnKeyType="done"
+          onSubmitEditing={() => {
+            Keyboard.dismiss();
+          }}
+          maxLength={3}
       />
       <TextInput
         style={styles.input}
@@ -100,28 +116,33 @@ export default function PatientDataForm() {
         value={patientData.sugarLevel}
         onChangeText={(text) => setPatientData({ ...patientData, sugarLevel: text })}
         keyboardType="numeric"
+          returnKeyType="done"
+          onSubmitEditing={() => {
+            Keyboard.dismiss();
+          }}
+          maxLength={3}
       />
-      <TextInput
-        style={styles.input}
-        placeholder="Allergies"
-        placeholderTextColor="#888" // Adjust placeholder color here
-        value={patientData.allergies}
-        onChangeText={(text) => setPatientData({ ...patientData, allergies: text })}
-      />
-       <TextInput
-        style={styles.input}
-        placeholder="Medications"
-        placeholderTextColor="#888" // Adjust placeholder color here
-        value={patientData.medications}
-        onChangeText={(text) => setPatientData({ ...patientData, medications: text })}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Health Conditions"
-        value={patientData.healthConditions}
-        placeholderTextColor="#888" // Adjust placeholder color here
-        onChangeText={(text) => setPatientData({ ...patientData, healthConditions: text })}
-      />
+     <View style={styles.switch}>
+      <Text style={styles.label}>Allergies</Text>
+        <Switch
+         value={patientData.allergies === 'Yes'}
+         onValueChange={(value) => setPatientData({ ...patientData, allergies: value ? 'Yes' : 'No' })}
+            />
+        </View>
+        <View style={styles.switch}>
+      <Text style={styles.label}>Medications</Text>
+        <Switch
+         value={patientData.medications === 'Yes'}
+         onValueChange={(value) => setPatientData({ ...patientData, medications: value ? 'Yes' : 'No' })}
+            />
+        </View>
+        <View style={styles.switch}>
+      <Text style={styles.label}>Health Conditions</Text>
+        <Switch
+         value={patientData.healthConditions === 'Yes'}
+         onValueChange={(value) => setPatientData({ ...patientData, healthConditions: value ? 'Yes' : 'No' })}
+            />
+        </View>
        <Button title="Submit" onPress={handleSubmit}/>
     </ScrollView>
   );
@@ -153,5 +174,15 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowRadius: 5,
     elevation: 2, // For Android shadow
+  },
+  switch:{
+    marginBottom: 15,
+    paddingHorizontal: 10,
+  },
+  label: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginBottom: 5,
+    color: '#333',
   },
 });

@@ -26,7 +26,7 @@ export default function TabLayout({ onLogout }:LogoutScreenProps) {
       <Tabs.Screen
         name="image-upload"
         options={{
-          title: 'Image Upload',
+          title: 'Food Analyizer',
           tabBarIcon: ({ color, size }) => <Ionicons name="camera" size={size} color={color} />,
         }}
       />
