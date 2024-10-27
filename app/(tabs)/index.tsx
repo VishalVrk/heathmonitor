@@ -122,27 +122,40 @@ export default function PatientDataForm() {
           }}
           maxLength={3}
       />
-     <View style={styles.switch}>
-      <Text style={styles.label}>Allergies</Text>
-        <Switch
-         value={patientData.allergies === 'Yes'}
-         onValueChange={(value) => setPatientData({ ...patientData, allergies: value ? 'Yes' : 'No' })}
-            />
-        </View>
-        <View style={styles.switch}>
-      <Text style={styles.label}>Medications</Text>
-        <Switch
-         value={patientData.medications === 'Yes'}
-         onValueChange={(value) => setPatientData({ ...patientData, medications: value ? 'Yes' : 'No' })}
-            />
-        </View>
-        <View style={styles.switch}>
-      <Text style={styles.label}>Health Conditions</Text>
-        <Switch
-         value={patientData.healthConditions === 'Yes'}
-         onValueChange={(value) => setPatientData({ ...patientData, healthConditions: value ? 'Yes' : 'No' })}
-            />
-        </View>
+      <TextInput
+        style={styles.input}
+        placeholder="Allergies"
+        placeholderTextColor="#888" // Adjust placeholder color here
+        value={patientData.allergies}
+        onChangeText={(text) => setPatientData({ ...patientData, allergies: text })}
+          returnKeyType="done"
+          onSubmitEditing={() => {
+            Keyboard.dismiss();
+          }}
+      />
+      <TextInput
+        style={styles.input}
+        placeholder="Medications"
+        placeholderTextColor="#888" // Adjust placeholder color here
+        value={patientData.medications}
+        onChangeText={(text) => setPatientData({ ...patientData, medications: text })}
+          returnKeyType="done"
+          onSubmitEditing={() => {
+            Keyboard.dismiss();
+          }}
+      />
+         <TextInput
+        style={styles.input}
+        placeholder="Health Conditions"
+        placeholderTextColor="#888" // Adjust placeholder color here
+        value={patientData.healthConditions}
+        onChangeText={(text) => setPatientData({ ...patientData, healthConditions: text })}
+          returnKeyType="done"
+          onSubmitEditing={() => {
+            Keyboard.dismiss();
+          }}
+      />
+      
        <Button title="Submit" onPress={handleSubmit}/>
     </ScrollView>
   );

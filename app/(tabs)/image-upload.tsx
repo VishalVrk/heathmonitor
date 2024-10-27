@@ -6,6 +6,7 @@ import RNPickerSelect from 'react-native-picker-select';
 import { collection, getDocs,setDoc,doc} from 'firebase/firestore';
 import { storage,db } from '../../firebase-config';
 import Markdown from 'react-native-markdown-display';
+import RecommendationChart from '@/components/RecommendationChart';
 
 // Define the type for the patient data
 interface Patient {
@@ -21,6 +22,25 @@ interface Patient {
   medications: string;
   healthConditions: string;
 }
+interface AnalysisResult {
+  nutrition: {
+      calories: string;
+      carbs: string;
+      detailed_nutrition: {
+          saturated_fat: string;
+          total_fat: string;
+          trans_fat: string;
+      };
+      fat: string;
+      graph: {
+          carbs: string;
+          fat: string;
+          protein: string;
+      };
+      protein: string;
+  };
+  recommendation: string;
+}
 
 export default function App() {
   const [facing, setFacing] = useState<CameraType>('back');
@@ -32,7 +52,7 @@ export default function App() {
   const [photo, setPhoto] = useState<any>(null);
   const [firebaseImageUrl, setFirebaseImageUrl] = useState<string | null>(null);
   const [ocrResult, setOcrResult] = useState<string | null>(null); // State to store the OCR result
-  const [analysisResult, setAnalysisResult] = useState<string | null>(null); // State to store the OCR result
+  const [analysisResult, setAnalysisResult] = useState<AnalysisResult | null>(null);
 
   useEffect(() => {
     // Fetch patients from Firebase on component mount
@@ -113,7 +133,7 @@ export default function App() {
 
         const result = await response.json();
         console.log('Analysis Result:', result);
-        setAnalysisResult(result.recommendation)
+        setAnalysisResult(result)
         setLoading(false)
         // Handle the result (e.g., displaying the recommendations)
     } catch (error) {
@@ -254,13 +274,24 @@ export default function App() {
   
 )}
 {
-  analysisResult ? (<View style={styles.analyzecontainer}>
-    <Text style={styles.resultText}>Recommendations</Text>
-    <Markdown style={styles}>
-            {analysisResult}
-          </Markdown>
-      </View>) : null
+    analysisResult ? (
+        <View style={styles.analyzecontainer}>
+            <RecommendationChart
+                analysisResult={analysisResult.recommendation}
+                calories={analysisResult.nutrition.calories}
+                protein={parseFloat(analysisResult.nutrition.graph.protein)}
+                carbs={parseFloat(analysisResult.nutrition.graph.carbs)}
+                fat={parseFloat(analysisResult.nutrition.graph.fat)}
+                detailedNutrition={{
+                    totalFat: analysisResult.nutrition.detailed_nutrition.total_fat,
+                    saturatedFat: analysisResult.nutrition.detailed_nutrition.saturated_fat,
+                    transFat: analysisResult.nutrition.detailed_nutrition.trans_fat
+                }}
+            />
+        </View>
+    ) : null
 }
+
 
   
     </View>
@@ -271,7 +302,7 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
+    padding: 10,
     backgroundColor: '#f5f5f5',
   },
   box: {
@@ -382,7 +413,7 @@ const styles = StyleSheet.create({
   },
   analyzecontainer: {
     marginTop: 20,
-    padding: 15,
+    padding: 10,
     backgroundColor: '#fff',
     borderRadius: 10,
     shadowColor: '#000',
@@ -390,6 +421,9 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 5,
     elevation: 2,
+    flex: 1,
+    // justifyContent: 'center',
+    // alignItems: 'center',
   },
   message: {
     fontSize: 18,
