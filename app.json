@@ -23,7 +23,6 @@
         "backgroundColor": "#ffffff"
       },
       "usesCleartextTraffic": true,
-
       "permissions": [
         "android.permission.RECORD_AUDIO",
         "INTERNET",
@@ -38,7 +37,8 @@
     },
     "plugins": [
       "expo-router",
-      "expo-image-picker"
+      "expo-image-picker",
+      "expo-font"
     ],
     "experiments": {
       "typedRoutes": true
